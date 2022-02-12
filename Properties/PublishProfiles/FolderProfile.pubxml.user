@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>D:\Document\GitHub\CODES\LocalSevenBlazor\bin\Release\net6.0\browser-wasm\publish\</_PublishTargetUrl>
+    <History>True|2022-02-05T05:18:27.2165376Z;True|2022-02-05T13:15:29.8892902+08:00;True|2022-02-04T23:31:39.4945889+08:00;True|2022-02-04T22:47:45.1295010+08:00;True|2022-02-04T22:45:45.3578309+08:00;</History>
+  </PropertyGroup>
+</Project>

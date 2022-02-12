@@ -1,0 +1,15 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider IsDarkMode="true"/>
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-0 pt-0">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+

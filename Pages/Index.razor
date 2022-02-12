@@ -1,0 +1,167 @@
+﻿@page "/"
+@using System.Text
+@using MyApplication.Datas
+@using System.Text.Json
+@using MyApplication.Helpers
+@inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
+@inject IDialogService DialogService
+
+<PageTitle>sha1在线筛选</PageTitle>
+
+
+
+<MudAppBar Fixed="true">
+    <p>sha1在线筛选 V0.0.1</p>
+    <InputFile id="fileInput" OnChange="@LoadFiles" hidden></InputFile>
+    <MudButton HtmlTag="label"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Filled.CloudUpload"
+               for="fileInput"
+               style="width:180px">
+        sha1文件选择
+    </MudButton>
+
+
+    @if (!IsFileLoading && root != null)
+    {
+        <MudGrid Justify="Justify.FlexEnd" Style="max-width:800px">
+            <MudItem>
+                <MudAlert Severity="Severity.Info">@root.FolderName</MudAlert>
+            </MudItem>
+            <MudItem>
+                <MudAlert Severity="Severity.Warning">文件数量：</MudAlert>
+            </MudItem>
+            <MudItem>
+                <MudAlert Severity="Severity.Error">总大小：</MudAlert>
+            </MudItem>
+        </MudGrid>
+
+
+    }
+</MudAppBar>
+
+<MudDivider DividerType="DividerType.FullWidth" Class="my-3" />
+
+
+
+@if (root != null)
+{
+
+    <MudChipSet MultiSelection="true" Filter="true">
+        @foreach (var item in Extensions)
+        {
+            <MudChip @key=item Text="pink" Variant="Variant.Text" Color="Color.Secondary">
+                @item.TypeName (@item.Count)
+            </MudChip>
+
+        }
+    </MudChipSet>
+
+    <MudGrid>
+        <MudItem>
+            <MudPaper MinWidth="100px" MaxWidth="400px" Style="height:600px;overflow:auto">
+                <MudTreeView Dense="true" @bind-SelectedValue="selectedItem" CanActivate=true CanHover=true Items="@root.Folders.OrderBy(q=>q.FolderName).ToHashSet()">
+                    <ItemTemplate>
+                        <MudTreeViewItem Icon="@Icons.Custom.Uncategorized.Folder" T="FolderItem" Text=@context.FolderName Items="@context.Folders.ToHashSet()" Value="@context">
+                        </MudTreeViewItem>
+                    </ItemTemplate>
+                </MudTreeView>
+            </MudPaper>
+
+        </MudItem>
+        <MudItem>
+            <MudPaper MaxWidth="600px">
+                <MudList>
+                    @if (selectedItem != null)
+                    {
+                        if (selectedItem.Folders != null)
+                        {
+                            foreach (var item in selectedItem.Folders)
+                            {
+                                <MudListItem>
+                                    <p>@item.FolderName</p>
+                                </MudListItem>
+                            }
+                        }
+
+                        if (selectedItem.Files != null)
+                        {
+                            foreach (var item in selectedItem.Files)
+                        {
+                            <MudListItem>
+                                <p>@item</p>
+                            </MudListItem>
+                        }
+                        }
+                        
+
+                    }
+                </MudList>
+            </MudPaper>
+
+        </MudItem>
+    </MudGrid>
+
+
+
+}
+
+<MudDialog @bind-IsVisible="IsFileLoading">
+    <DialogContent>
+        <p>文件载入中，请耐心等待...</p>
+        <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="my-7"></MudProgressLinear>
+    </DialogContent>
+</MudDialog>
+
+
+@code {
+    public bool IsFileLoading { get; set; }
+
+    private FolderItem root;
+
+    public List<FileType> Extensions { get; set; } = new();
+
+    private FolderItem selectedItem;
+
+    private double progressValue;
+
+    private async void LoadFiles(InputFileChangeEventArgs e)
+    {
+        IsFileLoading = true;
+
+
+        var stream = e.File.OpenReadStream(maxAllowedSize: e.File.Size);
+
+        root = new FolderItem { FolderName = "上传的文件" };
+
+        var child = await FileHelper.ParseFormFileAsync(stream, e.File.Name);
+        root.Folders = new[] { child };
+
+        IsFileLoading = false;
+        AnalyzeFiles();
+        this.StateHasChanged();
+    }
+
+    private void AnalyzeFiles()
+    {
+        //Extensions = Files.GroupBy(f => f.Extension).Select(g => new FileType { TypeName = g.Key, Count = g.Count() }).ToList();
+    }
+
+    private void FilterFiles()
+    {
+
+    }
+
+    private async void CopyItemSha1(FileItem item)
+    {
+        await JSRuntime.InvokeVoidAsync("clipboardCopy.copyText", item.OriginSha1Link);
+        Snackbar.Add("已经复制sha1链接： " + item.Name, Severity.Success);
+    }
+
+
+
+
+
+}
