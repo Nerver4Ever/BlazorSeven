@@ -4,9 +4,6 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<PublishTrimmed>true</PublishTrimmed>
-		<IsTrimmable>true</IsTrimmable>
-		<TrimMode>Link</TrimMode>
 	</PropertyGroup>
 
 	<ItemGroup>
