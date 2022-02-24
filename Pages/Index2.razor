@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/test"
 @using System.Text
 @using MyApplication.Datas
 @using System.Text.Json
@@ -7,63 +7,56 @@
 <PageTitle>sha1在线筛选</PageTitle>
 
 
-<div>
+<div style="display:flex;overflow:auto;flex-direction:column">
 
+   
 
-    <Layout>
-        <Affix OffsetTop="0">
-            <Header>
-                <MyInputFile Text="选择文件" OnChange="@LoadFiles"></MyInputFile>
-                @if (!string.IsNullOrWhiteSpace(folderInfo))
-                {
-                    <span class="folder-info-span">@folderInfo</span>
-                }
-            </Header>
-        </Affix>
-
-
+        <Header Style="height:64px;width:100%">
+            <MyInputFile Text="选择文件" OnChange="@LoadFiles"></MyInputFile>
+        </Header>
 
         @if (selectedItem != null)
         {
-            <Affix OffsetTop="64">
-                <div style="background-color:#f2f2f2;padding:0px 40px">
-                    <Row>
-                        <GridCol Span="1">
-                            <p>路径：</p>
-                        </GridCol>
-                        <GridCol Span="23">
-                            <Breadcrumb>
-                                @if (selectedItem != null)
+
+            <div style="width:100px;height:64px;background-color:#f2f2f2;padding:0px 40px">
+                <Row>
+                    <GridCol Span="1">
+                        <p>路径：</p>
+                    </GridCol>
+                    <GridCol Span="23">
+                        <Breadcrumb>
+                            @if (selectedItem != null)
+                            {
+                                <BreadcrumbItem>
+                                    <a @onclick="@(e=>PathCilck(root.ID))">根目录</a>
+                                </BreadcrumbItem>
+                                @if (!string.IsNullOrWhiteSpace(selectedItem.PathString))
                                 {
-                                    <BreadcrumbItem>
-                                        <a @onclick="@(e=>PathCilck(root.ID))">根目录</a>
-                                    </BreadcrumbItem>
-                                    @if (!string.IsNullOrWhiteSpace(selectedItem.PathString))
+                                    var parents = GetSubPaths(selectedItem.ID).Reverse();
+                                    if (parents.Count() >= 1)
                                     {
-                                        var parents = GetSubPaths(selectedItem.ID).Reverse();
-                                        if (parents.Count() >= 1)
+                                        foreach (var parent in parents.Skip(1))
                                         {
-                                            foreach (var parent in parents.Skip(1))
-                                            {
-                                                <BreadcrumbItem>
-                                                    <a @onclick="@(e=>PathCilck(parent.ID))">@parent.Name</a>
-                                                </BreadcrumbItem>
-                                            }
-                                            <BreadcrumbItem>@selectedItem.Name</BreadcrumbItem>
+                                            <BreadcrumbItem>
+                                                <a @onclick="@(e=>PathCilck(parent.ID))">@parent.Name</a>
+                                            </BreadcrumbItem>
                                         }
-
+                                        <BreadcrumbItem>@selectedItem.Name</BreadcrumbItem>
                                     }
+
                                 }
-                            </Breadcrumb>
-                        </GridCol>
-                    </Row>
-                </div>
-
-
-                <Descriptions style="background-color:#f2f2f2;padding:0px 40px">
-                    <DescriptionsItem Title="信息">@($"文件夹：{selectedItem.FolderCount}，文件：{selectedItem.FileCount}，共{FileHelper.CalculateFileSize(selectedItem.Size)}")</DescriptionsItem>
-                </Descriptions>
-            </Affix>
+                            }
+                        </Breadcrumb>
+                    </GridCol>
+                </Row>
+                <Row>
+                    <GridCol Span="24">
+                        <Descriptions style="background-color:#f2f2f2;padding:0px 40px">
+                            <DescriptionsItem Title="信息">@($"文件夹：{selectedItem.FolderCount}，文件：{selectedItem.FileCount}，共{FileHelper.CalculateFileSize(selectedItem.Size)}")</DescriptionsItem>
+                        </Descriptions>
+                    </GridCol>
+                </Row>
+            </div>
         }
 
         @if (selectedItem == null)
@@ -72,7 +65,7 @@
         }
         else
         {
-            <div style="height:calc(100vh - 220px); overflow-y:scroll">
+            <div style="overflow-y:auto;width:100%">
                 <ul class="ant-list-items">
                     <Virtualize TItem=@IItem Items="@selectedItem.Children" Context="item" ItemSize="24">
                         @if (item is FolderItem folder)
@@ -144,45 +137,9 @@
         }
 
 
-        @if(selectedItem!=null)
-        {
-            <Footer Style="height:48px;margin:0px 100px">
-            <Row>
-                <GridCol>
-                    <Dropdown Placement="@Placement.Top">
-                        <Overlay>
-                            <Menu>
-                                <MenuItem>附加到此处...</MenuItem>
-                                <MenuItem>附加到与原文件同级...</MenuItem>
-                            </Menu>
 
-                        </Overlay>
-                        <ChildContent>
-                            <Button>附加文件</Button>
-                        </ChildContent>
-                    </Dropdown>
-                </GridCol>
-                <GridCol>
-                    <Dropdown Placement="@Placement.Top">
-                        <Overlay>
-                            <Menu>
-                                <MenuItem>json格式</MenuItem>
-                                <MenuItem>txt格式</MenuItem>
-                            </Menu>
 
-                        </Overlay>
-                        <ChildContent>
-                            <Button>导出文件</Button>
-                        </ChildContent>
-                    </Dropdown>
-                </GridCol>
 
-            </Row>
-        </Footer>
-        }
-        
-
-    </Layout>
     <Modal Visible="@IsFileLoading" Closable="false" Footer="null">
         <div style="text-align: center;">
             <Spin Size="large" Tip="文件加载中..." />
@@ -192,12 +149,6 @@
 </div>
 
 <style>
-
-    .folder-info-span {
-        color: white;
-        margin-left: 40px;
-    }
-
     .site-layout-background {
         background: #fff;
     }
@@ -216,8 +167,8 @@
     }
 
         .ant-list-item:hover {
-            background-color: #E8F0FC;
-            color: #2777F8;
+            background-color: skyblue;
+            color: white;
             display: block
         }
 </style>
@@ -234,12 +185,11 @@
     private FolderItem selectedItem;
     private List<IItem> allItems = new List<IItem>();
     private FolderItem root;
-    private string folderInfo;
 
     private async void LoadFiles(InputFileChangeEventArgs e)
     {
         IsFileLoading = true;
-        folderInfo = "";
+
         selectedItem = null;
         allItems.Clear();
         await Task.Delay(200);
@@ -247,7 +197,6 @@
 
         root = await FileHelper.ConverterFromFileAsync(stream, e.File.Name, Guid.NewGuid());
 
-        folderInfo = $"【{root.Name}】： 文件夹: {root.FolderCount}， 文件: {root.FileCount}， 大小: {FileHelper.CalculateFileSize(root.Size)}";
         stream.Close();
 
         allItems = FileHelper.ConverterListFromFolderItem(root);
