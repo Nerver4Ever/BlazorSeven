@@ -1,0 +1,71 @@
+﻿
+
+<div style="height:340px;">
+    <h1>附加新文件...</h1>
+    <hr />
+    <h3 >当前目录： <span title="@CurrentFolderName" style="color:red">@CurrentFolderName</span></h3>
+
+    <p>位置选项</p>
+    <RadioGroup @bind-Value="@selectedPlace" Style="margin-bottom:10px;margin-left:10px;">
+        <Radio Style="@style" Value="@SelectedPlace.CurrentFolder">添加在当前目录下</Radio>
+        <Radio Style="@style" Value="@SelectedPlace.RootFolder">添加在根目录下</Radio>
+    </RadioGroup>
+    <p style="margin-top:20px"> 文件</p>
+    <MyInputFile Text="选择文件" ShowSelectedFileName="true" OnChange="@OnFileChangeInside"></MyInputFile>
+    <div style="margin-top:20px">
+        <Row>
+            <GridCol Span="16"></GridCol>
+            <GridCol Span="4">
+             <Button Disabled="@(!showComfirmButton)" OnClick="@RaiseOnComfirm" Type="@ButtonType.Primary">确认</Button>
+
+            </GridCol>
+             <GridCol Span="4">
+             <Button OnClick="@OnCancel">取消</Button>
+
+             </GridCol>
+            
+        </Row>
+    </div>
+
+
+    
+</div>
+
+@code {
+
+    string style = "display: block;height:30px;line-height:30px";
+
+
+    SelectedPlace selectedPlace { get; set; } = SelectedPlace.CurrentFolder;
+
+    [Parameter]
+    public string CurrentFolderName { get; set; }
+
+
+    [Parameter]
+    public EventCallback<AddFileArgs> OnComfirm { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnCancel { get; set; }
+
+
+    IBrowserFile file;
+    bool showComfirmButton;
+
+    private void OnFileChangeInside(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+        if (file != null)
+        {
+            showComfirmButton = true;
+        }
+    }
+
+    private async void RaiseOnComfirm(MouseEventArgs e)
+    {
+        if (OnComfirm.HasDelegate)
+        {
+            await OnComfirm.InvokeAsync(new AddFileArgs(selectedPlace, file));
+        }
+    }
+}

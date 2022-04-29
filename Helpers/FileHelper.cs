@@ -148,7 +148,7 @@ namespace MyApplication.Helpers
             childFiles.ForEach(q => root.Files.Add(q.Sha1Link));
 
 
-            var others = children.Where(q => (q.Paths.Length > (pathIndex + 1)) && q.Paths[pathIndex] == root.FolderName);
+            var others = children.Where(q => (q.Paths.Length > (pathIndex + 1)) && q.Paths[pathIndex] == root.FolderName).ToList();
 
             var childFolders = others.Select(q => q.Paths[pathIndex + 1]).Distinct();
 
@@ -163,7 +163,7 @@ namespace MyApplication.Helpers
                 };
                 root.Folders.Add(child);
 
-                FilesToJsonTree(others.ToList(), child, index);
+                FilesToJsonTree(others, child, index);
             }
         }
 
@@ -173,12 +173,12 @@ namespace MyApplication.Helpers
             JsonFolderItem folder = new();
             folder.FolderName = name;
             List<FileData> files = new List<FileData>();
-            StreamReader reader = new(stream);
-            string text = await reader.ReadToEndAsync();
-            reader.Close();
-            var lines = text.Split("\r\n");
-            foreach (var line in lines)
+            using StreamReader reader = new(stream);
+
+            var line = await reader.ReadLineAsync();
+            while(line!=null)
             {
+                line = line.Trim();
                 if (!string.IsNullOrWhiteSpace(line))
                 {
                     var infos = line.Split("|");
@@ -189,10 +189,11 @@ namespace MyApplication.Helpers
                         var file = new FileData(string.Join('|', infos[0..4]), paths);
                         files.Add(file);
                     }
-
-
                 }
+
+                line = await reader.ReadLineAsync();
             }
+
             FilesToJsonTree(files, folder, 0);
             return folder;
         }

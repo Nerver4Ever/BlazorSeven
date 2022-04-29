@@ -1,12 +1,17 @@
 ﻿<div class="ant-upload-card-wrapper">
-    <label class="avatar-uploader" for="upload">
+    <label class="avatar-uploader" for="@id">
         <div class="ant-upload ant-upload-select-text ant-upload-select">
-            <div tabindex="0" class="ant-upload" style="position:relative;">
-                <InputFile id="upload" hidden OnChange="@OnChange" />
+            <div tabindex="0" class="ant-upload" style="position:relative;display:flex">
+                <InputFile id="@id" accept=".json,.txt" hidden OnChange="@OnFileChangeInside" />
                 <div class="ant-btn ant-btn-default">
                     <Icon Type="upload" Theme="outline" />
                     <span>@Text</span>
                 </div>
+
+                @if (ShowSelectedFileName)
+                {
+                    <p style="margin-left:12px;margin-top:6px;color:red;">@selectedName</p>
+                }
             </div>
         </div>
     </label>
@@ -14,9 +19,24 @@
 </div>
 
 @code {
+    string id = Guid.NewGuid().ToString();
+
     [Parameter]
     public string Text { get; set; }
 
     [Parameter]
     public EventCallback<InputFileChangeEventArgs> OnChange { get; set; }
+
+    [Parameter]
+    public bool ShowSelectedFileName { get; set; } = false;
+
+    private string selectedName;
+
+    private async void OnFileChangeInside(InputFileChangeEventArgs e)
+    {
+        selectedName = e.File.Name;
+
+        if (OnChange.HasDelegate)
+            await OnChange.InvokeAsync(e);
+    }
 }
