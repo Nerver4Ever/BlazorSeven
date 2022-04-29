@@ -1,0 +1,31 @@
+/* /Pages/Index.razor.rz.scp.css */
+body[b-fpfs873t8p] {
+}
+
+.folder-info-span[b-fpfs873t8p] {
+    color: white;
+}
+
+.site-layout-background[b-fpfs873t8p] {
+    background: #fff;
+}
+
+.ant-list-items[b-fpfs873t8p] {
+    padding: 0px 4px 0px 40px;
+}
+
+.ant-list-item[b-fpfs873t8p] {
+    vertical-align: middle;
+    border-bottom: solid;
+    border-color: darkgray;
+    border-bottom-width: 1px;
+    display: block;
+    cursor: pointer;
+    height: 44px;
+}
+
+    .ant-list-item:hover[b-fpfs873t8p] {
+        background-color: #E8F0FC;
+        color: #2777F8;
+        display: block
+    }
