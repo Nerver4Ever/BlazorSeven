@@ -2,4 +2,4 @@
 
 
 github.io访问
-[https://github.com/Nerver4Ever/BlazorSeven](https://github.com/Nerver4Ever/BlazorSeven)
+[https://nerver4ever.github.io/BlazorSeven/](https://nerver4ever.github.io/BlazorSeven/)
