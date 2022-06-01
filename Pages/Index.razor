@@ -1,0 +1,205 @@
+﻿@page "/"
+@using BlazorSeven.Services
+@inject Manager manager
+
+<MCard Color="purple lighten-4"
+       Flat
+       tile>
+    <MToolbar>
+        <InputFile accept=".json,.txt" hidden id="selectFile" OnChange="OnChange"></InputFile>
+
+        <MButton Fab Icon Color="purple lighten-1" title="文件选择">
+            <label for="selectFile">
+                <MIcon>mdi-file-upload</MIcon>
+            </label>
+        </MButton>
+
+
+        <MToolbarTitle>sha1链接管理·wasm版</MToolbarTitle>
+        <MSpacer></MSpacer>
+
+        <MButton OnClick="@(_=>testc())">
+            test
+        </MButton>
+
+        <MButton Icon>
+            <MIcon>mdi-magnify</MIcon>
+        </MButton>
+
+        <MButton Icon>
+            <MIcon>mdi-dots-vertical</MIcon>
+        </MButton>
+    </MToolbar>
+
+
+</MCard>
+
+<div>
+    <MBreadcrumbs Items="paths" Large></MBreadcrumbs>
+</div>
+
+
+
+
+<MDataTable Headers="_headers"
+            Items="allItems"
+            ItemsPerPage="15"
+            Class="elevation-1"
+            TTItem="Item"
+            HideDefaultFooter>
+    <ItemColContent>
+        <div>
+            @if (context.Header.Value == nameof(Item.Size))
+            {
+                <p style="margin-bottom:0px">
+                    @SizeHelper.CalculateFileSize(context.Item.Size)
+
+                    @if (context.Item.ItemType == ItemType.Folder)
+                    {
+                        var folder = context.Item as FolderItem;
+                        <span>@($",文件夹: {folder.FolderCount},文件: {folder.FileCount}")</span>
+                    }
+
+                </p>
+
+
+            }
+            else if (context.Header.Value == nameof(Item.ItemType))
+            {
+                if (context.Item.ItemType == ItemType.Folder)
+                {
+                    <MIcon Small Color="yellow lighten-1">
+                        mdi-folder
+                    </MIcon>
+                }
+                else
+                {
+                    <MIcon Small>
+                        mdi-file
+                    </MIcon>
+                }
+
+            }
+            else if (context.Header.Value == "actions")
+            {
+                <MIcon Small Class="mr-4">mdi-pencil</MIcon>
+                
+                <MIcon Small Class="mr-4">
+                    mdi-download
+                </MIcon>
+
+                <MIcon Small Class="mr-4">mdi-delete</MIcon>
+            }
+            else if(context.Header.Value==nameof(Item.Name))
+            {
+                @if(context.Item is FolderItem folder)
+                {
+                   <div style="background-color:red">
+                       <a @onclick="@(e=>ChangeCurrentItem(folder))">@context.Value</a>
+                   </div>
+                    
+                }
+                else
+                {
+                    @context.Value
+                }
+
+            }
+            else
+            {
+                @context.Value
+            }
+        </div>
+
+    </ItemColContent>
+
+</MDataTable>
+
+
+@code {
+
+
+
+    void testc()
+    {
+        Console.WriteLine($"{manager.RootFolder.Name}-{manager.RootFolder.ID}");
+    }
+
+    List<BreadcrumbItem> paths = new();
+    List<Item> allItems = new List<Item>();
+    FolderItem currentFolder;
+    List<Item> itemsInCurrentFolder;
+
+    private void ChangeCurrentItem(FolderItem folder)
+    {
+        currentFolder=folder;
+        var parents = GetParentFolders(currentFolder);
+        itemsInCurrentFolder = currentFolder.Children;
+        paths.Clear();
+        foreach(var path in parents)
+        {
+            paths.Add(new BreadcrumbItem() { Text = path.Name });
+        }
+
+
+    }
+
+    private IEnumerable<FolderItem> GetParentFolders(FolderItem folder)
+    {
+        var item = folder;
+
+        if (folder.ID == manager.RootFolder.ID)
+        {
+            yield return manager.RootFolder;
+            yield break;
+        }
+
+        while(item.ParentID!=manager.RootFolder.ID)
+        {
+            item = allItems.FirstOrDefault(q => q.ID == item.ParentID) as FolderItem;
+            
+            if(item!=null)
+                yield return item;
+
+        }
+        yield return manager.RootFolder;
+    }
+
+
+    private async void OnChange(InputFileChangeEventArgs e)
+    {
+        manager.RootFolder.Children.Clear();
+
+        await using var stream = e.File.OpenReadStream(maxAllowedSize: e.File.Size);
+        (FolderItem Root,List<Item> Items) result = await Converters.ConverFromFileStream(stream, e.File.Name, manager.RootFolder.ID);
+        manager.RootFolder.Children.Add(result.Root);
+        allItems = result.Items;
+
+        ChangeCurrentItem(manager.RootFolder);
+
+        this.StateHasChanged();
+    }
+
+
+
+
+
+    private List<DataTableHeader<Item>> _headers = new List<DataTableHeader<Item>>
+        {
+           new ()
+           {
+            Text= "",
+            Align= "start",
+            Sortable= true,
+            Value= nameof(Item.ItemType),
+            Width="60px"
+          },
+          new (){ Text= "名称", Value= nameof(Item.Name)},
+          new (){ Text= "大小", Value= nameof(Item.Size),Width="20%"},
+          new (){ Text= "操作", Value= "actions",Sortable=false,Width="140px",Align="center" }
+
+        };
+
+  }
+
+
