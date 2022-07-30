@@ -3,6 +3,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<RunAOTCompilation>true</RunAOTCompilation>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Masa.Blazor" Version="0.3.0" />
