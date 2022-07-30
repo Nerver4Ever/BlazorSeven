@@ -2,6 +2,8 @@
 {
     public class SizeHelper
     {
+       
+        
         public static string CalculateFileSize(decimal size)
         {
             var s = decimal.Parse("1024");

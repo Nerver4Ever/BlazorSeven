@@ -1,0 +1,15 @@
+﻿{
+  "name": "sha1Links visual tools",
+  "short_name": "svt",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#03173d",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}

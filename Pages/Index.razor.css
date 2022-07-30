@@ -1,0 +1,63 @@
+﻿
+
+body {
+}
+
+.itemDetail{
+    height:34px;
+}
+.itemName{
+    margin-top:4px;
+    margin-bottom:0px;
+}
+
+
+
+.itemSize {
+    margin-bottom: 0px;
+    font-size:small;
+    font-style:italic;
+    opacity:0.4;
+}
+
+.itemDetail:hover .itemName {
+    color: dodgerblue;
+    font-size: large;
+}
+
+.itemDetail:hover .itemSize{
+    opacity:0.9;
+}
+
+.itemImage{
+    margin-left:8px;
+    margin-right:8px;
+}
+
+.m-list-item {
+    height: 40px;
+}
+
+.mVScroll{
+    height:calc(100% - 180px);
+}
+
+.versionInTitle {
+    margin-bottom: 0px;
+    font-size: xx-small;
+    font-style: italic;
+    opacity: 0.4;
+}
+
+.textTitle {
+    margin-bottom: 0px;
+    font-size: large;
+}
+
+.ainBreadcrumbsItem {
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+

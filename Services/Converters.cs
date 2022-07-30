@@ -5,7 +5,7 @@ namespace BlazorSeven.Services
 {
     public class Converters
     {
-        public static async Task<(FolderItem,List<Item>)> ConverFromFileStream(Stream stream,string fileName,Guid rootID) 
+        public static async Task<List<Item>> ConverFromFileStream(Stream stream,string fileName,Guid rootID) 
         {
             var extension = Path.GetExtension(fileName).ToLower();
             var name = Path.GetFileNameWithoutExtension(fileName);
@@ -17,35 +17,63 @@ namespace BlazorSeven.Services
 
 
 
-        private static (FolderItem Root,List<Item> AllItems) ConverterFromJsonItemInternal(JsonFolderItem json, Guid rootID)
+        private static List<Item> ConverterFromJsonItemInternal(JsonFolderItem json, Guid rootID)
         {
-            static void Converter(JsonFolderItem jsonItem, FolderItem item)
+            static void Converter(JsonFolderItem jsonItem, FolderItem item,List<Item> items)
             {
                 item.Name = jsonItem.FolderName;
 
-                
-                foreach (var file in jsonItem.Files)
+                decimal directFilesSize = 0;
+                decimal directFoldersSize = 0;
+                int fileCount = 0;
+                int folderCount = 0;
+
+
+                if (jsonItem.Files != null)
                 {
-                    var childFile = new FileItem(file) { ParentID = item.ID };
-                    item.Children.Add(childFile);
+                    foreach (var file in jsonItem.Files)
+                    {
+                        var childFile = new FileItem(file) { ParentID = item.ID };
+                        //item.Children.Add(childFile);
+                        directFilesSize += childFile.Size;
+                        items.Add(childFile);
+                    }
+
+                    fileCount += jsonItem.Files.Count;
                 }
 
-                foreach (var jsonChildItem in jsonItem.Folders)
+                if (jsonItem.Folders != null)
                 {
-                    var childFolder = new FolderItem(jsonChildItem.FolderName) { ParentID = item.ID };
-                    item.Children.Add(childFolder);
-                    Converter(jsonChildItem, childFolder);
+                    foreach (var jsonChildItem in jsonItem.Folders)
+                    {
+                        var childFolder = new FolderItem(jsonChildItem.FolderName) { ParentID = item.ID };
+                        //item.Children.Add(childFolder);
+                        items.Add(childFolder);
+                        Converter(jsonChildItem, childFolder,items);
+                        directFoldersSize += childFolder.Size;
+                        fileCount += childFolder.FileCount;
+                        folderCount += childFolder.FolderCount;
+                        
+                    }
+
+                    folderCount += jsonItem.Folders.Count;
                 }
+                    
+
+                item.Size = directFilesSize + directFoldersSize;
+                item.FolderCount = folderCount;
+                item.FileCount = fileCount;
             }
 
 
             FolderItem folderItem = new(json.FolderName) { ParentID = rootID };
-            Converter(json, folderItem);
+            
             List<Item> items = new();
+            Converter(json, folderItem,items);
+            //CalculateSize(folderItem, items);
+            items.Add(folderItem);
 
-            CalculateSize(folderItem, items);
-
-            return (folderItem,items);
+            return items;
         }
 
 

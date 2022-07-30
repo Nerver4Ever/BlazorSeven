@@ -1,11 +1,22 @@
 ﻿@inherits LayoutComponentBase
+@inject VersionInfo version
 
 <MApp Dark>
-    <MMain>
-        <MContainer Fluid>
-            <CascadingValue Value="this">
-                @Body
-            </CascadingValue>
-        </MContainer>
-    </MMain>
+    @Body
+
+    <MFooter  Fixed Style="height:40px;padding:0px 8px" >
+        <MButton Icon title="前往github反馈一波！">
+            <MIcon>mdi-github</MIcon>
+        </MButton>
+        <MButton Icon title="前往爱发电支持一波！" Color="red" Href="@version.AifadainHref" Target="_blank">
+            <MIcon>mdi-heart</MIcon>
+        </MButton>
+        <p style="margin:8px">@version.Version</p>
+    </MFooter>
 </MApp>
+
+@code
+{
+    
+
+}

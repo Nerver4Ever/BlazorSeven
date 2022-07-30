@@ -2,181 +2,308 @@
 @using BlazorSeven.Services
 @inject Manager manager
 
-<MCard Color="purple lighten-4"
-       Flat
-       tile>
-    <MToolbar>
-        <InputFile accept=".json,.txt" hidden id="selectFile" OnChange="OnChange"></InputFile>
+<MCard Class="overflow-hidden" Style="width:100%">
+    <MAppBar Fixed Height="50">
+        <ChildContent>
+            <InputFile accept=".json,.txt" hidden id="selectFile" OnChange="OnChange"></InputFile>
 
-        <MButton Fab Icon Color="purple lighten-1" title="文件选择">
+            <MToolbarTitle>
+                sha1Links visual tools
+            </MToolbarTitle>
+            <MSpacer></MSpacer>
+
             <label for="selectFile">
-                <MIcon>mdi-file-upload</MIcon>
+                <MButton Color="primary" style="pointer-events:none">
+                    文件选择
+                </MButton>
             </label>
-        </MButton>
 
 
-        <MToolbarTitle>sha1链接管理·wasm版</MToolbarTitle>
-        <MSpacer></MSpacer>
 
-        <MButton OnClick="@(_=>testc())">
-            test
-        </MButton>
+        </ChildContent>
+    </MAppBar>
 
-        <MButton Icon>
-            <MIcon>mdi-magnify</MIcon>
-        </MButton>
+    <MCard Style="text-align:right;margin-top:55px">
 
-        <MButton Icon>
-            <MIcon>mdi-dots-vertical</MIcon>
-        </MButton>
-    </MToolbar>
+        <label for="selectFile">
+            <MButton Color="orange" Small style="pointer-events:none">
+                继续添加文件
+            </MButton>
+        </label>
+
+        <Masa.Blazor.Presets.PDrawer Title="搜索" Width="360">
+            <ActivatorContent>
+                <MButton Icon @attributes="@context.Attrs" title="搜索">
+                    <MIcon>mdi-magnify</MIcon>
+                </MButton>
+
+            </ActivatorContent>
+            <ChildContent>
+                搜索
+            </ChildContent>
+        </Masa.Blazor.Presets.PDrawer>
+        <Masa.Blazor.Presets.PDrawer Title="排序" Width="360">
+            <ActivatorContent>
+                <MButton Icon @attributes="@context.Attrs" title="排序">
+                    <MIcon>mdi-sort</MIcon>
+                </MButton>
+
+            </ActivatorContent>
+            <ChildContent>
+                排序
+            </ChildContent>
+        </Masa.Blazor.Presets.PDrawer>
+        <Masa.Blazor.Presets.PDrawer Title="筛选" Width="360">
+            <ActivatorContent>
+                <MButton Icon @attributes="@context.Attrs" title="筛选">
+                    <MIcon>mdi-checkbox-multiple-marked-outline</MIcon>
+                </MButton>
+
+            </ActivatorContent>
+            <ChildContent>
+                Content
+            </ChildContent>
+        </Masa.Blazor.Presets.PDrawer>
+
+    </MCard>
+
+    @if (paths.Count > 0)
+    {
+        <MBreadcrumbs Divider=">" Style="height:24px">
+            @foreach (var path in paths)
+            {
+                <MBreadcrumbsItem><a class="ainBreadcrumbsItem" title="@path.Name" @onclick="@(e=>ChangeCurrentItem(path))">@path.Name</a></MBreadcrumbsItem>
+            }
+        </MBreadcrumbs>
+    }
+
+    <MCard Style="width:100%">
+        <MVirtualScroll OverscanCount=20 Items="itemsInCurrentFolder" TItem="Item" Context="vItem" Style="max-height:calc(100vh - 168px);">
+            <ItemContent>
+                <MListItem Dense>
+                    <div class="itemImage">
+                        @if (vItem.ItemType == ItemType.Folder)
+                        {
+                            <MIcon Color="yellow lighten-1">
+                                mdi-folder
+                            </MIcon>
+                        }
+                        else
+                        {
+                            <MIcon>
+                                mdi-file
+                            </MIcon>
+                        }
+                    </div>
+
+                    <MListItemContent>
+                        <MListItemTitle Style="padding:0px">
+                            @if (vItem is FolderItem folder)
+                            {
+                                <div @ondblclick="@(e=>ChangeCurrentItem(folder))" class="itemDetail">
+                                    <p class="itemName">
+                                        @folder.Name
+                                    </p>
+                                    <p class="itemSize">
+                                        @SizeHelper.CalculateFileSize(folder.Size)
+                                        <span>@($",文件夹: {folder.FolderCount},文件: {folder.FileCount}")</span>
+                                    </p>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="itemDetail">
+                                    <p class="itemName">
+                                        @vItem.Name
+                                    </p>
+                                    <p class="itemSize">
+                                        @SizeHelper.CalculateFileSize(vItem.Size)
+                                    </p>
+                                </div>
+                            }
+
+                        </MListItemTitle>
+                    </MListItemContent>
+
+                    <MListItemAction>
+                        <MButton Dark
+                                 Icon
+                                 OnClick="OnContextMenu">
+                            <MIcon>mdi-dots-vertical</MIcon>
+                        </MButton>
+
+                    </MListItemAction>
+
+                </MListItem>
+
+                <MDivider></MDivider>
+
+            </ItemContent>
+        </MVirtualScroll>
+
+    </MCard>
+
+
+    <MMenu @bind-Value="showMenu"
+           PositionX="X"
+           PositionY="Y"
+           Absolute
+           OffsetY>
+        <MList>
+            <MListItem>
+                <MListItemContent>
+                    <MListItemTitle>
+                        复制文件sha1
+                    </MListItemTitle>
+                </MListItemContent>
+            </MListItem>
+            <MListItem>
+                <MListItemContent>
+                    <MListItemTitle>
+                        复制sha1链接
+                    </MListItemTitle>
+                </MListItemContent>
+            </MListItem>
+            <MListItem>
+                <MListItemContent>
+                    <MListItemTitle>
+                        编辑名称
+                    </MListItemTitle>
+                </MListItemContent>
+            </MListItem>
+            <MListItem>
+                <MListItemContent>
+                    <MListItemTitle>
+                        删除
+                    </MListItemTitle>
+                </MListItemContent>
+            </MListItem>
+        </MList>
+    </MMenu>
+
+
+
+
+    <div class="text-center">
+        <MDialog @bind-Value="isLoading" Persistent Width="360">
+            <MCard Color="primary"
+                   Dark>
+                <h2 style="margin-top:10px;margin-bottom:10px;margin-left:10px">正在载入数据...</h2>
+
+                <MProgressLinear Indeterminate
+                                 Color="white"
+                                 Class="mb-0"></MProgressLinear>
+            </MCard>
+        </MDialog>
+    </div>
+
+
 
 
 </MCard>
 
-<div>
-    <MBreadcrumbs Items="paths" Large></MBreadcrumbs>
-</div>
 
 
 
 
-<MDataTable Headers="_headers"
-            Items="allItems"
-            ItemsPerPage="15"
-            Class="elevation-1"
-            TTItem="Item"
-            HideDefaultFooter>
-    <ItemColContent>
-        <div>
-            @if (context.Header.Value == nameof(Item.Size))
-            {
-                <p style="margin-bottom:0px">
-                    @SizeHelper.CalculateFileSize(context.Item.Size)
-
-                    @if (context.Item.ItemType == ItemType.Folder)
-                    {
-                        var folder = context.Item as FolderItem;
-                        <span>@($",文件夹: {folder.FolderCount},文件: {folder.FileCount}")</span>
-                    }
-
-                </p>
 
 
-            }
-            else if (context.Header.Value == nameof(Item.ItemType))
-            {
-                if (context.Item.ItemType == ItemType.Folder)
-                {
-                    <MIcon Small Color="yellow lighten-1">
-                        mdi-folder
-                    </MIcon>
-                }
-                else
-                {
-                    <MIcon Small>
-                        mdi-file
-                    </MIcon>
-                }
 
-            }
-            else if (context.Header.Value == "actions")
-            {
-                <MIcon Small Class="mr-4">mdi-pencil</MIcon>
-                
-                <MIcon Small Class="mr-4">
-                    mdi-download
-                </MIcon>
-
-                <MIcon Small Class="mr-4">mdi-delete</MIcon>
-            }
-            else if(context.Header.Value==nameof(Item.Name))
-            {
-                @if(context.Item is FolderItem folder)
-                {
-                   <div style="background-color:red">
-                       <a @onclick="@(e=>ChangeCurrentItem(folder))">@context.Value</a>
-                   </div>
-                    
-                }
-                else
-                {
-                    @context.Value
-                }
-
-            }
-            else
-            {
-                @context.Value
-            }
-        </div>
-
-    </ItemColContent>
-
-</MDataTable>
 
 
 @code {
 
 
 
-    void testc()
+
+    List<Item> allItems = new();
+    FolderItem currentFolder;
+    List<Item> itemsInCurrentFolder = new();
+    bool isLoading = false;
+    List<FolderItem> paths = new();
+
+    bool isInSearchMode = false;
+
+    #region ContextMenu
+    bool showMenu = false;
+    double X = 0;
+    double Y = 0;
+
+    private async Task OnContextMenu(MouseEventArgs args)
     {
-        Console.WriteLine($"{manager.RootFolder.Name}-{manager.RootFolder.ID}");
+        showMenu = false;
+        X = args.ClientX;
+        Y = args.ClientY;
+        showMenu = true;
+
+        await Task.CompletedTask;
     }
 
-    List<BreadcrumbItem> paths = new();
-    List<Item> allItems = new List<Item>();
-    FolderItem currentFolder;
-    List<Item> itemsInCurrentFolder;
+
+    #endregion
+
+
 
     private void ChangeCurrentItem(FolderItem folder)
     {
-        currentFolder=folder;
-        var parents = GetParentFolders(currentFolder);
-        itemsInCurrentFolder = currentFolder.Children;
+        if (currentFolder != null && folder.ID == currentFolder.ID) return;
+        Console.WriteLine(folder);
         paths.Clear();
-        foreach(var path in parents)
-        {
-            paths.Add(new BreadcrumbItem() { Text = path.Name });
-        }
-
-
+        itemsInCurrentFolder.Clear();
+        this.StateHasChanged();
+        currentFolder = folder;
+        paths = GetParentFolders(currentFolder);
+        itemsInCurrentFolder = allItems.Where(q => q.ParentID == folder.ID)?.OrderBy(q => q.ItemType).ThenBy(q => q.Size).ToList() ?? new List<Item>();
     }
 
-    private IEnumerable<FolderItem> GetParentFolders(FolderItem folder)
+    private List<FolderItem> GetParentFolders(FolderItem folder)
     {
         var item = folder;
-
-        if (folder.ID == manager.RootFolder.ID)
+        List<FolderItem> parents = new();
+        if (folder != manager.RootFolder)
         {
-            yield return manager.RootFolder;
-            yield break;
+            parents.Add(folder);
         }
 
-        while(item.ParentID!=manager.RootFolder.ID)
+        while (item.ParentID != manager.RootFolder.ID)
         {
             item = allItems.FirstOrDefault(q => q.ID == item.ParentID) as FolderItem;
-            
-            if(item!=null)
-                yield return item;
+
+            if (item != null)
+            {
+                parents.Add(item);
+            }
+            else
+            {
+                break;
+            }
 
         }
-        yield return manager.RootFolder;
+
+
+
+        parents.Add(manager.RootFolder);
+        parents.Reverse();
+
+        return parents;
     }
 
 
     private async void OnChange(InputFileChangeEventArgs e)
     {
-        manager.RootFolder.Children.Clear();
-
+        isLoading = true;
+        this.StateHasChanged();
+        await Task.Delay(500);
         await using var stream = e.File.OpenReadStream(maxAllowedSize: e.File.Size);
-        (FolderItem Root,List<Item> Items) result = await Converters.ConverFromFileStream(stream, e.File.Name, manager.RootFolder.ID);
-        manager.RootFolder.Children.Add(result.Root);
-        allItems = result.Items;
+        var addItems = await Converters.ConverFromFileStream(stream, e.File.Name, manager.RootFolder.ID);
 
+        allItems = addItems;
+        currentFolder = null;
         ChangeCurrentItem(manager.RootFolder);
 
+
+        isLoading = false;
         this.StateHasChanged();
     }
 
@@ -184,21 +311,7 @@
 
 
 
-    private List<DataTableHeader<Item>> _headers = new List<DataTableHeader<Item>>
-        {
-           new ()
-           {
-            Text= "",
-            Align= "start",
-            Sortable= true,
-            Value= nameof(Item.ItemType),
-            Width="60px"
-          },
-          new (){ Text= "名称", Value= nameof(Item.Name)},
-          new (){ Text= "大小", Value= nameof(Item.Size),Width="20%"},
-          new (){ Text= "操作", Value= "actions",Sortable=false,Width="140px",Align="center" }
 
-        };
 
   }
 

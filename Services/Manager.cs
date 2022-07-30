@@ -6,9 +6,12 @@ namespace BlazorSeven.Services
     {
         public FolderItem RootFolder { get; private set; }
 
+        
         public Manager(string name)
         {
             RootFolder = new FolderItem(name);
         }
+
+        
     }
 }
