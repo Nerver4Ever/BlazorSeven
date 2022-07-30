@@ -1,54 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" style="overflow-y:auto">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>载入中,稍等</title>
+    <title>sha1Links visual tools</title>
+    <link href="manifest.json" rel="manifest" />
     <base href="/BlazorSeven/" />
-    <link href="_content/AntDesign/css/ant-design-blazor.css" rel="stylesheet">
-    <link href="css/site.css" rel="stylesheet" />
-    <link href="MyApplication.styles.css" rel="stylesheet">
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="BlazorSeven.styles.css" rel="stylesheet" />
+    <link href="_content/Masa.Blazor/css/masa-blazor.css" rel="stylesheet">
+    <link href="_content/Masa.Blazor/css/masa-extend-blazor.css" rel="stylesheet">
+    <link href="https://cdn.masastack.com/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.masastack.com/npm/materialicons/materialicons.css" rel="stylesheet">
+    <link href="https://cdn.masastack.com/npm/fontawesome/v5.0.13/css/all.css" rel="stylesheet">
 </head>
 
 <body>
-    <div id="app">
+    <div id="app">Loading...</div>
 
-        <div class="loader">
-            <div class="loader-inner">
-                <div class="loader-line-wrap">
-                    <div class="loader-line"></div>
-                </div>
-                <div class="loader-line-wrap">
-                    <div class="loader-line"></div>
-                </div>
-                <div class="loader-line-wrap">
-                    <div class="loader-line"></div>
-                </div>
-                <div class="loader-line-wrap">
-                    <div class="loader-line"></div>
-                </div>
-                <div class="loader-line-wrap">
-                    <div class="loader-line"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="blazor-error-ui" >
-        出现一个未经处理的问题。
-        <a href="" class="reload">刷新一下</a>
+    <div id="blazor-error-ui">
+        有错误发生！请往github反馈！👉
+        <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
-    <script src="_content/AntDesign/js/ant-design-blazor.js"></script>
-    <script>
-        window.clipboardCopy = {
-            copyText: function (text) {
-                navigator.clipboard.writeText(text);
-            }
-        };
-    </script>
+    <script src="_content/BlazorComponent/js/blazor-component.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
 </body>
 
 </html>

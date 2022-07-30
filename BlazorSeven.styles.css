@@ -1,0 +1,66 @@
+/* /Pages/Index.razor.rz.scp.css */
+
+
+body[b-evt5r2eflo] {
+}
+
+.itemDetail[b-evt5r2eflo]{
+    height:34px;
+}
+.itemName[b-evt5r2eflo]{
+    margin-top:4px;
+    margin-bottom:0px;
+}
+
+
+
+.itemSize[b-evt5r2eflo] {
+    margin-bottom: 0px;
+    font-size:small;
+    font-style:italic;
+    opacity:0.4;
+}
+
+.itemDetail:hover .itemName[b-evt5r2eflo] {
+    color: dodgerblue;
+    font-size: large;
+}
+
+.itemDetail:hover .itemSize[b-evt5r2eflo]{
+    opacity:0.9;
+}
+
+.itemImage[b-evt5r2eflo]{
+    margin-left:8px;
+    margin-right:8px;
+}
+
+.m-list-item[b-evt5r2eflo] {
+    height: 40px;
+}
+
+.mVScroll[b-evt5r2eflo]{
+    height:calc(100% - 180px);
+}
+
+.versionInTitle[b-evt5r2eflo] {
+    margin-bottom: 0px;
+    font-size: xx-small;
+    font-style: italic;
+    opacity: 0.4;
+}
+
+.textTitle[b-evt5r2eflo] {
+    margin-bottom: 0px;
+    font-size: large;
+}
+
+.ainBreadcrumbsItem[b-evt5r2eflo] {
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* /Shared/MainLayout.razor.rz.scp.css */
+
